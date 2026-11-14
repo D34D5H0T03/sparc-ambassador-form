@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Local
+    'applications',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +58,7 @@ ROOT_URLCONF = 'sparc_ambassador_form.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,7 +119,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIR = [
+    BASE_DIR / 'static',
+]
 
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Maximum file size upload 10 mb + small overhead
+DATA_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
