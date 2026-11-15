@@ -140,7 +140,7 @@ sparc-form/
 1. **Clone the repository and enter the project directory:**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/D34D5H0T03/sparc-ambassador-form.git
    cd sparc-form
    ```
 
@@ -190,9 +190,9 @@ SECRET_KEY=replace-with-a-strong-random-secret-key
 DEBUG=True
 
 # PostgreSQL Database
-DB_NAME=sparc_ambassador
-DB_USER=sparc_app
-DB_PASSWORD=sparc123
+DB_NAME=your-db-name
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
 DB_HOST=127.0.0.1
 DB_PORT=5432
 
