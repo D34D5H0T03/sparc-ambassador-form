@@ -8,10 +8,18 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from googleapiclient.discovery import build
 
+from .constants import (
+    GMAIL_USER_ID,
+    LOCAL_HOSTS,
+    MAX_ERROR_LOG_LENGTH,
+    OAUTH_INIT_PATH,
+    STATIC_LOGO_PATH,
+    SUBJECT_APPLICATION_RECEIVED,
+    TEMPLATE_RECEIVED_HTML,
+    TEMPLATE_RECEIVED_TXT,
+)
 from .google_auth import get_credentials
 from .models import MailJob
-
-SUBJECT = "SPARC 2026 - Ambassador Application Received"
 
 
 def build_service():
@@ -19,12 +27,15 @@ def build_service():
 
     if not creds:
         raise RuntimeError(
-            "Google API needs re-authorisation. Visit /init/oauth2/ as a staff user."
+            f"Google API needs re-authorisation. Visit {OAUTH_INIT_PATH} as a staff user."
         )
 
+    api_name = getattr(settings, "GOOGLE_MAIL_API_NAME", "gmail")
+    api_version = getattr(settings, "GOOGLE_MAIL_API_VERSION", "v1")
+
     return build(
-        settings.GOOGLE_MAIL_API_NAME,
-        settings.GOOGLE_MAIL_API_VERSION,
+        api_name,
+        api_version,
         credentials=creds,
         cache_discovery=False,
     )
@@ -32,42 +43,43 @@ def build_service():
 
 def send_mail(service, to, name):
     validate_email(to)
-    
-    # logo
+
+    site_url = getattr(settings, "SITE_URL", "")
     logo_url = ""
-    if settings.SITE_URL and "localhost" not in settings.SITE_URL and "127.0.0.1" not in settings.SITE_URL:
-        logo_url = f"{settings.SITE_URL}/static/images/SPARC26LogoMin.png" # placeholder for logo
+    if site_url and not any(host in site_url for host in LOCAL_HOSTS):
+        logo_url = f"{site_url}{STATIC_LOGO_PATH}"
 
     context = {
         "name": name,
         "logo_url": logo_url,
     }
-    
-    # Headers
+
     msg = EmailMessage()
     msg["From"] = settings.MAIL_SENDER
     msg["To"] = to
-    msg["Subject"] = SUBJECT
+    msg["Subject"] = SUBJECT_APPLICATION_RECEIVED
 
     msg.set_content(
         render_to_string(
-            "emails/ambassador_received.txt",
+            TEMPLATE_RECEIVED_TXT,
             context,
         )
     )
+
     msg.add_alternative(
         render_to_string(
-            "emails/ambassador_received.html",
+            TEMPLATE_RECEIVED_HTML,
             context,
         ),
         subtype="html",
     )
+
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode("ascii")
 
     result = (
         service.users()
         .messages()
-        .send(userId="me", body={"raw": raw})
+        .send(userId=GMAIL_USER_ID, body={"raw": raw})
         .execute()
     )
 
@@ -95,10 +107,20 @@ def process_job(job_id, service=None):
         job.status = MailJob.Status.SENT
         job.error = ""
         job.sent_at = timezone.now()
+        print(
+            f"[OK] ID={application.id} Name={application.full_name} "
+            f"Email={job.to_email} MsgId={job.gmail_message_id}",
+            flush=True,
+        )
 
     except Exception as exc:
         job.status = MailJob.Status.FAILED
-        job.error = str(exc)[:500]
+        job.error = str(exc)[:MAX_ERROR_LOG_LENGTH]
+        print(
+            f"[FAIL] ID={application.id} Name={application.full_name} "
+            f"Reason={job.error}",
+            flush=True,
+        )
 
     job.save()
     return job

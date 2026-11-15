@@ -4,7 +4,17 @@
 {% block title %}Apply — SPARC Ambassador 2026{% endblock %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data" class="application-form" id="ambassador-form" novalidate>
+<form
+    method="post"
+    enctype="multipart/form-data"
+    class="application-form"
+    id="ambassador-form"
+    data-max-photo-bytes="{{ max_photo_bytes }}"
+    data-max-photo-mb="{{ max_photo_mb }}"
+    data-max-bio-words="{{ max_bio_words }}"
+    data-bio-warning-words="{{ bio_warning_words }}"
+    novalidate
+>
     {% csrf_token %}
 
     {% if form.errors %}
@@ -20,12 +30,12 @@
         <div class="card-header">
             <span class="section-tag">Section 1</span>
             <h2>Personal Information</h2>
-            <p class="section-desc">Provide your primary contact details. Your email address serves as your unique applicant identifier.</p>
+            <p class="section-desc">Provide your primary contact details. All application updates will be sent to your registered email address.</p>
         </div>
 
         <div class="form-grid">
             <div class="form-group full-width">
-                <label for="{{ form.full_name.id_for_label }}">Full Name <span class="required-mark">*</span></label>
+                <label for="{{ form.full_name.id_for_label }}">Full Name (as on your ID) <span class="required-mark">*</span></label>
                 {{ form.full_name }}
                 {% if form.full_name.errors %}<div class="field-errors">{{ form.full_name.errors }}</div>{% endif %}
             </div>
@@ -84,7 +94,7 @@
             </div>
 
             <div class="form-group full-width">
-                <label for="{{ form.student_id.id_for_label }}">University Student ID <span class="required-mark">*</span></label>
+                <label for="{{ form.student_id.id_for_label }}">Student ID Number <span class="required-mark">*</span></label>
                 {{ form.student_id }}
                 {% if form.student_id.errors %}<div class="field-errors">{{ form.student_id.errors }}</div>{% endif %}
             </div>
@@ -95,8 +105,8 @@
     <section class="form-card">
         <div class="card-header">
             <span class="section-tag">Section 3</span>
-            <h2>IEEE Membership Information</h2>
-            <p class="section-desc">Indicate whether you hold an active IEEE membership. Additional fields appear for current members.</p>
+            <h2>IEEE Information</h2>
+            <p class="section-desc">Indicate whether you are an IEEE member. Additional membership fields appear if you select active membership.</p>
         </div>
 
         <div class="toggle-box">
@@ -128,7 +138,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="{{ form.ieee_position.id_for_label }}">Position in the Branch <span class="optional-tag">(If any)</span></label>
+                    <label for="{{ form.ieee_position.id_for_label }}">Your Position in the Branch <span class="optional-tag">(If any)</span></label>
                     {{ form.ieee_position }}
                     {% if form.ieee_position.errors %}<div class="field-errors">{{ form.ieee_position.errors }}</div>{% endif %}
                 </div>
@@ -136,20 +146,23 @@
         </div>
     </section>
 
-    <!-- Section 4: Photo and Biography -->
+    <!-- Section 4: Photo for Website, Social Media and ID -->
     <section class="form-card">
         <div class="card-header">
             <span class="section-tag">Section 4</span>
-            <h2>Formal Photograph &amp; Website Biography</h2>
-            <p class="section-desc">Selected ambassadors will be featured on the official SPARC website using the photo and bio submitted here.</p>
+            <h2>Photo for Website, Social Media &amp; ID</h2>
+            <p class="section-desc">Selected ambassadors will be featured on the SPARC website, social media channels, and official ID cards using the photo and bio below.</p>
         </div>
 
         <div class="form-grid">
             <div class="form-group full-width">
-                <label for="{{ form.photo.id_for_label }}">Formal Photograph <span class="required-mark">*</span></label>
+                <label for="{{ form.photo.id_for_label }}">Upload Your Formal Photo <span class="required-mark">*</span></label>
+                <p class="field-hint">
+                    <strong>Photo guide:</strong> Formal attire, plain light background, face clearly visible and looking at the camera, no sunglasses or filters, clear and high resolution.
+                </p>
                 <div class="file-upload-box" id="photo-dropzone">
                     {{ form.photo }}
-                    <p class="field-hint">Accepted formats: JPG, JPEG, or PNG. Maximum file size: 10 MB.</p>
+                    <p class="field-hint">Accepted formats: JPG, JPEG, or PNG (1 file). Maximum file size: {{ max_photo_mb }} MB.</p>
                     <div id="photo-client-error" class="client-error is-hidden" role="alert"></div>
                     <div id="photo-preview-container" class="photo-preview is-hidden">
                         <img id="photo-preview-img" src="" alt="Selected photograph preview">
@@ -164,11 +177,11 @@
 
             <div class="form-group full-width">
                 <div class="label-row">
-                    <label for="{{ form.bio.id_for_label }}">Website Biography <span class="required-mark">*</span></label>
-                    <span id="bio-word-counter" class="word-counter">0 / 50 words</span>
+                    <label for="{{ form.bio.id_for_label }}">Short Bio for the Website <span class="required-mark">*</span></label>
+                    <span id="bio-word-counter" class="word-counter">0 / {{ max_bio_words }} words</span>
                 </div>
                 {{ form.bio }}
-                <p class="field-hint">Write in the third person (e.g., "Alex is a third-year Computer Science student..."). Strictly 50 words or fewer.</p>
+                <p class="field-hint">Write in the third person (e.g., "Alex is a third-year Computer Science student..."). Strictly {{ max_bio_words }} words or fewer.</p>
                 {% if form.bio.errors %}<div class="field-errors">{{ form.bio.errors }}</div>{% endif %}
             </div>
         </div>
@@ -178,8 +191,8 @@
     <section class="form-card">
         <div class="card-header">
             <span class="section-tag">Section 6</span>
-            <h2>About You &amp; Ambassador Activities</h2>
-            <p class="section-desc">Share your motivation and the outreach activities you are most comfortable leading.</p>
+            <h2>About You</h2>
+            <p class="section-desc">Share your motivation and select the ambassador activities you are comfortable with.</p>
         </div>
 
         <div class="form-grid">
@@ -211,19 +224,19 @@
         </div>
     </section>
 
-    <!-- Section 7: Mandatory Agreements -->
+    <!-- Section 7: Agreement -->
     <section class="form-card">
         <div class="card-header">
             <span class="section-tag">Section 7</span>
-            <h2>Applicant Declaration &amp; Agreements</h2>
-            <p class="section-desc">All four declarations below are mandatory to complete your application.</p>
+            <h2>Agreement</h2>
+            <p class="section-desc">All four declarations below are required to complete your application.</p>
         </div>
 
         <div class="agreements-list">
             <div class="agreement-item">
                 <label class="checkbox-label" for="{{ form.confirmed_accuracy.id_for_label }}">
                     {{ form.confirmed_accuracy }}
-                    <span>I confirm that all personal, academic, and IEEE membership details provided in this application are accurate and truthful. <span class="required-mark">*</span></span>
+                    <span>I confirm that all the information provided is accurate. <span class="required-mark">*</span></span>
                 </label>
                 {% if form.confirmed_accuracy.errors %}<div class="field-errors">{{ form.confirmed_accuracy.errors }}</div>{% endif %}
             </div>
@@ -231,7 +244,7 @@
             <div class="agreement-item">
                 <label class="checkbox-label" for="{{ form.agreed_photo_usage.id_for_label }}">
                     {{ form.agreed_photo_usage }}
-                    <span>I grant SPARC permission to publish my submitted photograph and biography on official event websites and promotional materials if selected. <span class="required-mark">*</span></span>
+                    <span>I agree that SPARC may use my name, photo and bio on its website, social media and ID card. <span class="required-mark">*</span></span>
                 </label>
                 {% if form.agreed_photo_usage.errors %}<div class="field-errors">{{ form.agreed_photo_usage.errors }}</div>{% endif %}
             </div>
@@ -239,7 +252,7 @@
             <div class="agreement-item">
                 <label class="checkbox-label" for="{{ form.understood_point_system.id_for_label }}">
                     {{ form.understood_point_system }}
-                    <span>I understand the SPARC Ambassador activity point system and commit to fulfilling the assigned outreach responsibilities. <span class="required-mark">*</span></span>
+                    <span>I understand that points are earned through tasks and ambassadors are ranked on performance. <span class="required-mark">*</span></span>
                 </label>
                 {% if form.understood_point_system.errors %}<div class="field-errors">{{ form.understood_point_system.errors }}</div>{% endif %}
             </div>
@@ -247,7 +260,7 @@
             <div class="agreement-item">
                 <label class="checkbox-label" for="{{ form.agreed_contact.id_for_label }}">
                     {{ form.agreed_contact }}
-                    <span>I consent to being contacted by the SPARC organizing team via email or WhatsApp regarding my application status. <span class="required-mark">*</span></span>
+                    <span>I agree to be contacted by email and WhatsApp about SPARC activities. <span class="required-mark">*</span></span>
                 </label>
                 {% if form.agreed_contact.errors %}<div class="field-errors">{{ form.agreed_contact.errors }}</div>{% endif %}
             </div>

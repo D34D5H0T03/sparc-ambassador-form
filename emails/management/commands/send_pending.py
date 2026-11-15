@@ -1,9 +1,11 @@
-# Custom CLI commands to sent pending emails
-
 from time import sleep
 
 from django.core.management.base import BaseCommand
 
+from emails.constants import (
+    BATCH_SEND_DELAY_SECONDS,
+    DEFAULT_RETRY_FROM_ID,
+)
 from emails.models import MailJob
 from emails.sender import build_service, process_job
 
@@ -15,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--from-id",
             type=int,
-            default=1,
+            default=DEFAULT_RETRY_FROM_ID,
             help="Minimum application ID to process.",
         )
 
@@ -47,7 +49,7 @@ class Command(BaseCommand):
             else:
                 failed.append(job.application_id)
 
-            sleep(3)
+            sleep(BATCH_SEND_DELAY_SECONDS)
 
         self.stdout.write(f"Done. Sent: {sent} Failed: {failed}")
 

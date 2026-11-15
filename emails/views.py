@@ -5,6 +5,14 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 
+from .constants import (
+    OAUTH_ACCESS_TYPE,
+    OAUTH_INCLUDE_GRANTED_SCOPES,
+    OAUTH_INIT_PATH,
+    OAUTH_PROMPT,
+    SESSION_OAUTH_STATE_KEY,
+    SESSION_OAUTH_VERIFIER_KEY,
+)
 from .google_auth import create_oauth_flow, get_credentials, save_credentials
 
 
@@ -16,12 +24,12 @@ def oauth2_init(request):
 
     flow = create_oauth_flow()
     authorization_url, state = flow.authorization_url(
-        access_type="offline",
-        include_granted_scopes="true",
-        prompt="consent",
+        access_type=OAUTH_ACCESS_TYPE,
+        include_granted_scopes=OAUTH_INCLUDE_GRANTED_SCOPES,
+        prompt=OAUTH_PROMPT,
     )
-    request.session["google_oauth_state"] = state
-    request.session["google_oauth_code_verifier"] = getattr(
+    request.session[SESSION_OAUTH_STATE_KEY] = state
+    request.session[SESSION_OAUTH_VERIFIER_KEY] = getattr(
         flow, "code_verifier", None
     )
     request.session.modified = True
@@ -35,21 +43,21 @@ def oauth2_callback(request):
             f"Google OAuth authorization failed: {request.GET.get('error')}"
         )
 
-    expected_state = request.session.get("google_oauth_state")
+    expected_state = request.session.get(SESSION_OAUTH_STATE_KEY)
     returned_state = request.GET.get("state")
 
     if not expected_state or expected_state != returned_state:
         return HttpResponseBadRequest(
-            "Invalid OAuth state parameter. Start authorization again from /init/oauth2/."
+            f"Invalid OAuth state parameter. Start authorization again from {OAUTH_INIT_PATH}."
         )
 
     flow = create_oauth_flow(state=expected_state)
-    flow.code_verifier = request.session.get("google_oauth_code_verifier")
+    flow.code_verifier = request.session.get(SESSION_OAUTH_VERIFIER_KEY)
     flow.fetch_token(authorization_response=request.build_absolute_uri())
     save_credentials(flow.credentials)
 
-    request.session.pop("google_oauth_state", None)
-    request.session.pop("google_oauth_code_verifier", None)
+    request.session.pop(SESSION_OAUTH_STATE_KEY, None)
+    request.session.pop(SESSION_OAUTH_VERIFIER_KEY, None)
 
     return HttpResponse(
         "<h2>Gmail API Authorization Successful</h2>"
