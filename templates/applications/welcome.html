@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome — SPARC Ambassador Portal 2026{% endblock %}
+
+{% block content %}
+<section class="form-card welcome-card">
+    <div class="card-header welcome-header">
+        <span class="section-tag">Recruitment Portal</span>
+        <h2>Welcome to the SPARC 2026 Ambassador Program</h2>
+        <p class="section-desc">
+            Select an option below to submit a new ambassador application or access the administrative review panel.
+        </p>
+    </div>
+
+    <div class="welcome-body">
+        <p class="welcome-intro">
+            SPARC Ambassadors represent our technical community across university campuses by organizing outreach sessions, sharing event updates, and bridging student branches with national initiatives. Applicants should prepare their university details, IEEE membership credentials (if applicable), a formal photograph under 10 MB, and a short biography of 50 words or fewer before starting.
+        </p>
+
+        <div class="welcome-actions">
+            <a href="{% url 'applications:apply' %}" class="btn-primary welcome-btn">
+                Fill Out Application Form
+            </a>
+            <a href="{% url 'admin:index' %}" class="btn-secondary welcome-btn">
+                Open Admin Panel
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Application Submitted — SPARC Ambassador 2026{% endblock %}
+
+{% block content %}
+<section class="form-card success-card">
+    <div class="success-icon" aria-hidden="true">&#10003;</div>
+    <h2>Application Received</h2>
+    <p class="success-message">
+        Thank you for applying to become a <strong>SPARC 2026 Ambassador</strong>. Your application details and formal photograph have been recorded in our system.
+    </p>
+    <p class="success-subtext">
+        Our organizing committee will review all submissions carefully. Shortlisted and selected ambassadors will be notified via their registered email address with further onboarding instructions.
+    </p>
+    <div class="success-actions">
+        <a href="{% url 'applications:welcome' %}" class="btn-secondary">Return to Welcome Portal</a>
+    </div>
+</section>
+{% endblock %}

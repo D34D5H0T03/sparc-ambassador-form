@@ -2,6 +2,12 @@ from django.db import transaction
 from django.shortcuts import render, redirect
 from .forms import AmbassadorApplicationsForm
 
+def welcome(request):
+    return render(
+        request,
+        "applications/welcome.html",
+    )
+
 def apply(request):
     if request.method == "POST":
         form = AmbassadorApplicationsForm(request.POST, request.FILES)
