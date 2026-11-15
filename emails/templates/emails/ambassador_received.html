@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Received</title>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+    <table width="600" align="center" cellpadding="0" cellspacing="0" style="max-width: 600px; background: #ffffff; border-radius: 8px; padding: 30px; border: 1px solid #e2e8f0;">
+        {% if logo_url %}
+        <tr>
+            <td align="center" style="padding: 12px 20px 20px;">
+                <img src="{{ logo_url }}" alt="SPARC Logo" width="150" style="display: block; max-width: 150px; height: auto;">
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td style="color: #333333; font-size: 15px; line-height: 1.7;">
+                <h2 style="margin-top: 0; color: #00629b;">Application Received!</h2>
+
+                <p>Dear {{ name }},</p>
+
+                <p>
+                    Thank you for applying to be a SPARC Ambassador.
+                </p>
+
+                <p>
+                    We have received your application. Selected applicants will be notified by email and given their unique Ambassador Code.
+                </p>
+
+                <p>
+                    Follow us on our social media for updates.
+                </p>
+
+                <p style="margin-bottom: 0;">
+                    Best regards,<br>
+                    <strong>IEEE NSU Student Branch</strong>
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

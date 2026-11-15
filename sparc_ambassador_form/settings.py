@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Local
     'applications',
+    'emails',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,17 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Gmail API & OAuth 2.0 Configuration
+DEV_GOOGLE_CLOUD_CLIENT_ID = os.getenv('DEV_GOOGLE_CLOUD_CLIENT_ID', '')
+DEV_GOOGLE_CLOUD_CLIENT_SECRET = os.getenv('DEV_GOOGLE_CLOUD_CLIENT_SECRET', '')
+DEV_GOOGLE_CLOUD_PROJECT_ID = os.getenv('DEV_GOOGLE_CLOUD_PROJECT_ID', '')
+DEV_SCOPES = [
+    os.getenv('DEV_SCOPES', 'https://www.googleapis.com/auth/gmail.send'),
+]
+
+GOOGLE_MAIL_API_NAME = os.getenv('GOOGLE_MAIL_API_NAME', 'gmail')
+GOOGLE_MAIL_API_VERSION = os.getenv('GOOGLE_MAIL_API_VERSION', 'v1')
+
+SITE_URL = os.getenv('SITE_URL', 'http://localhost:8000').rstrip('/')
+MAIL_SENDER = os.getenv('MAIL_SENDER', '')
