@@ -1,4 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const applicationForm = document.getElementById("ambassador-form");
+
+    // Configuration values injected from Django settings/constants via form data attributes
+    const BYTES_PER_MB = 1024 * 1024;
+    const MAX_BIO_WORDS = Number(applicationForm?.dataset.maxBioWords) || 50;
+    const BIO_WARNING_WORDS = Number(applicationForm?.dataset.bioWarningWords) || 42;
+    const MAX_PHOTO_BYTES = Number(applicationForm?.dataset.maxPhotoBytes) || (10 * BYTES_PER_MB);
+    const MAX_PHOTO_MB = Number(applicationForm?.dataset.maxPhotoMb) || 10;
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
+
     // Conditional IEEE Membership Fields Toggle
     const ieeeCheckbox = document.getElementById("id_is_ieee_member");
     const ieeeWrapper = document.getElementById("ieee-fields-wrapper");
@@ -15,10 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
         syncIeeeVisibility();
     }
 
-    // Live 50-Word Biography Counter
+    // Live Biography Word Counter
     const bioInput = document.getElementById("id_bio");
     const bioCounter = document.getElementById("bio-word-counter");
-    const MAX_BIO_WORDS = 50;
 
     function updateBioWordCount() {
         if (!bioInput || !bioCounter) return;
@@ -31,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (count > MAX_BIO_WORDS) {
             bioCounter.classList.add("over-limit");
-        } else if (count >= 42) {
+        } else if (count >= BIO_WARNING_WORDS) {
             bioCounter.classList.add("near-limit");
         }
     }
@@ -40,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bioInput.addEventListener("input", updateBioWordCount);
         updateBioWordCount();
     }
+
     // Photograph Size & Type Pre-Check + Thumbnail Preview
     const photoInput = document.getElementById("id_photo");
     const previewContainer = document.getElementById("photo-preview-container");
@@ -47,8 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileNameSpan = document.getElementById("photo-file-name");
     const fileSizeSpan = document.getElementById("photo-file-size");
     const photoClientError = document.getElementById("photo-client-error");
-    const MAX_PHOTO_BYTES = 10 * 1024 * 1024; // 10 MB
-    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
     let activeObjectUrl = null;
 
     function resetPhotoPreview() {
@@ -81,9 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (file.size > MAX_PHOTO_BYTES) {
-                const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                const sizeMb = (file.size / BYTES_PER_MB).toFixed(2);
                 if (photoClientError) {
-                    photoClientError.textContent = `Selected file is ${sizeMb} MB, which exceeds the 10 MB limit.`;
+                    photoClientError.textContent = `Selected file is ${sizeMb} MB, which exceeds the ${MAX_PHOTO_MB} MB limit.`;
                     photoClientError.classList.remove("is-hidden");
                 }
                 photoInput.value = "";
@@ -94,14 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (previewImg) previewImg.src = activeObjectUrl;
             if (fileNameSpan) fileNameSpan.textContent = file.name;
             if (fileSizeSpan) {
-                fileSizeSpan.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+                fileSizeSpan.textContent = `${(file.size / BYTES_PER_MB).toFixed(2)} MB`;
             }
             if (previewContainer) previewContainer.classList.remove("is-hidden");
         });
     }
 
     // Prevent Accidental Double Submissions
-    const applicationForm = document.getElementById("ambassador-form");
     const submitBtn = document.getElementById("submit-btn");
 
     if (applicationForm && submitBtn) {

@@ -1,14 +1,16 @@
 from django import forms
+
+from .constants import (
+    ACTIVITY_CHOICES,
+    ALLOWED_PHOTO_ACCEPT_ATTR,
+    BIO_TEXTAREA_ROWS,
+    MAX_BIO_WORD_COUNT,
+    MAX_PHOTO_SIZE_BYTES,
+    MAX_PHOTO_SIZE_MB,
+    MOTIVATION_TEXTAREA_ROWS,
+)
 from .models import AmbassadorApplications
 
-ACTIVITY_CHOICES = [
-    ("social_media", "Social Media Promotion & Sharing"),
-    ("short_videos", "Creating Short-form Videos / Reels"),
-    ("campus_events", "Organizing or Hosting Campus Workshops & Info Sessions"),
-    ("content_writing", "Content Writing & Blog Posts"),
-    ("graphic_design", "Graphic Design & Visual Branding"),
-    ("community_outreach", "Student Community Outreach & Networking"),
-]
 
 class AmbassadorApplicationsForm(forms.ModelForm):
     activities = forms.MultipleChoiceField(
@@ -46,7 +48,7 @@ class AmbassadorApplicationsForm(forms.ModelForm):
             "required": "You must agree to be contacted regarding your application."
         },
     )
-    
+
     class Meta:
         model = AmbassadorApplications
         exclude = ["submitted_at"]
@@ -128,26 +130,26 @@ class AmbassadorApplicationsForm(forms.ModelForm):
             "photo": forms.ClearableFileInput(
                 attrs={
                     "class": "form-file-input",
-                    "accept": ".jpg,.jpeg,.png,image/jpeg,image/png",
+                    "accept": ALLOWED_PHOTO_ACCEPT_ATTR,
                 }
             ),
             "bio": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 4,
-                    "placeholder": "Write a short biography for the SPARC website (maximum 50 words)...",
+                    "rows": BIO_TEXTAREA_ROWS,
+                    "placeholder": f"Write a short biography for the SPARC website (maximum {MAX_BIO_WORD_COUNT} words)...",
                 }
             ),
             "motivation": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 6,
+                    "rows": MOTIVATION_TEXTAREA_ROWS,
                     "placeholder": "Tell us why you want to represent SPARC at your university...",
                 }
             ),
             "referral_source": forms.Select(attrs={"class": "form-control"}),
         }
-    
+
     def clean_email(self):
         email = self.cleaned_data.get("email", "").strip().lower()
         # check uniqueness
@@ -160,26 +162,24 @@ class AmbassadorApplicationsForm(forms.ModelForm):
     def clean_bio(self):
         bio = self.cleaned_data.get("bio", "").strip()
         words = bio.split()
-        # max length
-        if len(words) > 50:
+        if len(words) > MAX_BIO_WORD_COUNT:
             raise forms.ValidationError(
-                f"Your biography must not exceed 50 words (currently {len(words)} words)."
+                f"Your biography must not exceed {MAX_BIO_WORD_COUNT} words (currently {len(words)} words)."
             )
         return bio
 
     def clean_photo(self):
         photo = self.cleaned_data.get("photo")
-        if photo:
-            if photo.size > 10 * 1024 * 1024:
-                raise forms.ValidationError(
-                    "The uploaded photograph must be smaller than 10 MB."
-                )
+        if photo and photo.size > MAX_PHOTO_SIZE_BYTES:
+            raise forms.ValidationError(
+                f"The uploaded photograph must be smaller than {MAX_PHOTO_SIZE_MB} MB."
+            )
         return photo
 
     def clean(self):
         cleaned_data = super().clean()
         is_member = cleaned_data.get("is_ieee_member")
-
+        # checks ieee info 
         if is_member:
             required_ieee_fields = {
                 "ieee_membership_number": "Please provide your IEEE membership number.",
@@ -191,7 +191,6 @@ class AmbassadorApplicationsForm(forms.ModelForm):
                 if not value or not str(value).strip():
                     self.add_error(field_name, error_msg)
         else:
-            # Wipe out any stale IEEE data if the user unchecked IEEE membership
             cleaned_data["ieee_membership_number"] = ""
             cleaned_data["ieee_membership_grade"] = ""
             cleaned_data["ieee_student_branch"] = ""

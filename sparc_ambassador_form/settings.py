@@ -132,9 +132,13 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Maximum file size upload 10 mb + small overhead
-DATA_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
-FILE_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
+# Form Constraints & Upload Limits
+MAX_PHOTO_SIZE_MB = 10
+UPLOAD_OVERHEAD_MB = 1
+MAX_BIO_WORD_COUNT = 50
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = (MAX_PHOTO_SIZE_MB + UPLOAD_OVERHEAD_MB) * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = (MAX_PHOTO_SIZE_MB + UPLOAD_OVERHEAD_MB) * 1024 * 1024
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration

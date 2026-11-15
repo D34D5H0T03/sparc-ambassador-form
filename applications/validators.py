@@ -1,18 +1,22 @@
-# This file holds the logic for input validation
-
 from django.core.exceptions import ValidationError
 
+from .constants import (
+    MAX_BIO_WORD_COUNT,
+    MAX_PHOTO_SIZE_BYTES,
+    MAX_PHOTO_SIZE_MB,
+)
+
+
 def validate_photo_size(file_obj):
-    max_size_bytes = 10 * 1024 * 1024 # 10 MB
-    if file_obj.size > max_size_bytes:
+    if file_obj.size > MAX_PHOTO_SIZE_BYTES:
         raise ValidationError(
-            "The uploaded photograph exceeds the maximum allowed size of 10 MB."
+            f"The uploaded photograph exceeds the maximum allowed size of {MAX_PHOTO_SIZE_MB} MB."
         )
+
 
 def validate_bio_word_count(value):
     words = value.strip().split()
-    
-    if len(words) > 50:
+    if len(words) > MAX_BIO_WORD_COUNT:
         raise ValidationError(
-            f"Your biography cannot exceed 50 words (currently {len(words)} words)."
-        ) 
+            f"Your biography cannot exceed {MAX_BIO_WORD_COUNT} words (currently {len(words)} words)."
+        )
