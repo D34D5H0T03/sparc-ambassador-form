@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Apply — SPARC Ambassador 2026{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="application-form" id="ambassador-form" novalidate>
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="alert-banner alert-error" role="alert">
+        <strong>Submission could not be completed.</strong>
+        Please review the highlighted fields below and correct the errors before submitting again.
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <!-- Section 1: Personal Information -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 1</span>
+            <h2>Personal Information</h2>
+            <p class="section-desc">Provide your primary contact details. Your email address serves as your unique applicant identifier.</p>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.full_name.id_for_label }}">Full Name <span class="required-mark">*</span></label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="field-errors">{{ form.full_name.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email Address <span class="required-mark">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="field-errors">{{ form.email.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.whatsapp_number.id_for_label }}">WhatsApp Number <span class="required-mark">*</span></label>
+                {{ form.whatsapp_number }}
+                {% if form.whatsapp_number.errors %}<div class="field-errors">{{ form.whatsapp_number.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth <span class="required-mark">*</span></label>
+                {{ form.date_of_birth }}
+                {% if form.date_of_birth.errors %}<div class="field-errors">{{ form.date_of_birth.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.gender.id_for_label }}">Gender <span class="required-mark">*</span></label>
+                {{ form.gender }}
+                {% if form.gender.errors %}<div class="field-errors">{{ form.gender.errors }}</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: University Information -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 2</span>
+            <h2>University Information</h2>
+            <p class="section-desc">Tell us about your current academic institution and enrollment status.</p>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.university.id_for_label }}">University Name <span class="required-mark">*</span></label>
+                {{ form.university }}
+                {% if form.university.errors %}<div class="field-errors">{{ form.university.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.department.id_for_label }}">Department <span class="required-mark">*</span></label>
+                {{ form.department }}
+                {% if form.department.errors %}<div class="field-errors">{{ form.department.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.year_of_study.id_for_label }}">Current Year of Study <span class="required-mark">*</span></label>
+                {{ form.year_of_study }}
+                {% if form.year_of_study.errors %}<div class="field-errors">{{ form.year_of_study.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.student_id.id_for_label }}">University Student ID <span class="required-mark">*</span></label>
+                {{ form.student_id }}
+                {% if form.student_id.errors %}<div class="field-errors">{{ form.student_id.errors }}</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: IEEE Information -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 3</span>
+            <h2>IEEE Membership Information</h2>
+            <p class="section-desc">Indicate whether you hold an active IEEE membership. Additional fields appear for current members.</p>
+        </div>
+
+        <div class="toggle-box">
+            <label class="checkbox-label" for="{{ form.is_ieee_member.id_for_label }}">
+                {{ form.is_ieee_member }}
+                <span>I am currently an active IEEE member</span>
+            </label>
+            {% if form.is_ieee_member.errors %}<div class="field-errors">{{ form.is_ieee_member.errors }}</div>{% endif %}
+        </div>
+
+        <div id="ieee-fields-wrapper" class="conditional-panel {% if not form.is_ieee_member.value %}is-hidden{% endif %}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="{{ form.ieee_membership_number.id_for_label }}">IEEE Membership Number <span class="required-mark">*</span></label>
+                    {{ form.ieee_membership_number }}
+                    {% if form.ieee_membership_number.errors %}<div class="field-errors">{{ form.ieee_membership_number.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.ieee_membership_grade.id_for_label }}">IEEE Membership Grade <span class="required-mark">*</span></label>
+                    {{ form.ieee_membership_grade }}
+                    {% if form.ieee_membership_grade.errors %}<div class="field-errors">{{ form.ieee_membership_grade.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.ieee_student_branch.id_for_label }}">IEEE Student Branch Name <span class="required-mark">*</span></label>
+                    {{ form.ieee_student_branch }}
+                    {% if form.ieee_student_branch.errors %}<div class="field-errors">{{ form.ieee_student_branch.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.ieee_position.id_for_label }}">Position in the Branch <span class="optional-tag">(If any)</span></label>
+                    {{ form.ieee_position }}
+                    {% if form.ieee_position.errors %}<div class="field-errors">{{ form.ieee_position.errors }}</div>{% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Photo and Biography -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 4</span>
+            <h2>Formal Photograph &amp; Website Biography</h2>
+            <p class="section-desc">Selected ambassadors will be featured on the official SPARC website using the photo and bio submitted here.</p>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.photo.id_for_label }}">Formal Photograph <span class="required-mark">*</span></label>
+                <div class="file-upload-box" id="photo-dropzone">
+                    {{ form.photo }}
+                    <p class="field-hint">Accepted formats: JPG, JPEG, or PNG. Maximum file size: 10 MB.</p>
+                    <div id="photo-client-error" class="client-error is-hidden" role="alert"></div>
+                    <div id="photo-preview-container" class="photo-preview is-hidden">
+                        <img id="photo-preview-img" src="" alt="Selected photograph preview">
+                        <div class="photo-meta">
+                            <span id="photo-file-name"></span>
+                            <span id="photo-file-size"></span>
+                        </div>
+                    </div>
+                </div>
+                {% if form.photo.errors %}<div class="field-errors">{{ form.photo.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <div class="label-row">
+                    <label for="{{ form.bio.id_for_label }}">Website Biography <span class="required-mark">*</span></label>
+                    <span id="bio-word-counter" class="word-counter">0 / 50 words</span>
+                </div>
+                {{ form.bio }}
+                <p class="field-hint">Write in the third person (e.g., "Alex is a third-year Computer Science student..."). Strictly 50 words or fewer.</p>
+                {% if form.bio.errors %}<div class="field-errors">{{ form.bio.errors }}</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: About You -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 6</span>
+            <h2>About You &amp; Ambassador Activities</h2>
+            <p class="section-desc">Share your motivation and the outreach activities you are most comfortable leading.</p>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="{{ form.motivation.id_for_label }}">Why do you want to become a SPARC Ambassador? <span class="required-mark">*</span></label>
+                {{ form.motivation }}
+                {% if form.motivation.errors %}<div class="field-errors">{{ form.motivation.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label>Which activities are you comfortable with? <span class="required-mark">*</span></label>
+                <p class="field-hint">Select all activities that apply.</p>
+                <div class="activities-grid">
+                    {% for checkbox in form.activities %}
+                    <label class="activity-item" for="{{ checkbox.id_for_label }}">
+                        {{ checkbox.tag }}
+                        <span>{{ checkbox.choice_label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.activities.errors %}<div class="field-errors">{{ form.activities.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group full-width">
+                <label for="{{ form.referral_source.id_for_label }}">How did you hear about SPARC? <span class="required-mark">*</span></label>
+                {{ form.referral_source }}
+                {% if form.referral_source.errors %}<div class="field-errors">{{ form.referral_source.errors }}</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 7: Mandatory Agreements -->
+    <section class="form-card">
+        <div class="card-header">
+            <span class="section-tag">Section 7</span>
+            <h2>Applicant Declaration &amp; Agreements</h2>
+            <p class="section-desc">All four declarations below are mandatory to complete your application.</p>
+        </div>
+
+        <div class="agreements-list">
+            <div class="agreement-item">
+                <label class="checkbox-label" for="{{ form.confirmed_accuracy.id_for_label }}">
+                    {{ form.confirmed_accuracy }}
+                    <span>I confirm that all personal, academic, and IEEE membership details provided in this application are accurate and truthful. <span class="required-mark">*</span></span>
+                </label>
+                {% if form.confirmed_accuracy.errors %}<div class="field-errors">{{ form.confirmed_accuracy.errors }}</div>{% endif %}
+            </div>
+
+            <div class="agreement-item">
+                <label class="checkbox-label" for="{{ form.agreed_photo_usage.id_for_label }}">
+                    {{ form.agreed_photo_usage }}
+                    <span>I grant SPARC permission to publish my submitted photograph and biography on official event websites and promotional materials if selected. <span class="required-mark">*</span></span>
+                </label>
+                {% if form.agreed_photo_usage.errors %}<div class="field-errors">{{ form.agreed_photo_usage.errors }}</div>{% endif %}
+            </div>
+
+            <div class="agreement-item">
+                <label class="checkbox-label" for="{{ form.understood_point_system.id_for_label }}">
+                    {{ form.understood_point_system }}
+                    <span>I understand the SPARC Ambassador activity point system and commit to fulfilling the assigned outreach responsibilities. <span class="required-mark">*</span></span>
+                </label>
+                {% if form.understood_point_system.errors %}<div class="field-errors">{{ form.understood_point_system.errors }}</div>{% endif %}
+            </div>
+
+            <div class="agreement-item">
+                <label class="checkbox-label" for="{{ form.agreed_contact.id_for_label }}">
+                    {{ form.agreed_contact }}
+                    <span>I consent to being contacted by the SPARC organizing team via email or WhatsApp regarding my application status. <span class="required-mark">*</span></span>
+                </label>
+                {% if form.agreed_contact.errors %}<div class="field-errors">{{ form.agreed_contact.errors }}</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-primary" id="submit-btn">Submit Ambassador Application</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'applications/js/form.js' %}"></script>
+{% endblock %}
