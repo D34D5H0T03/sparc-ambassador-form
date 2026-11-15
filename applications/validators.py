@@ -9,7 +9,7 @@ def validate_photo_size(file_obj):
             "The uploaded photograph exceeds the maximum allowed size of 10 MB."
         )
 
-def validate_bio_wordcount(value):
+def validate_bio_word_count(value):
     words = value.strip().split()
     
     if len(words) > 50:
