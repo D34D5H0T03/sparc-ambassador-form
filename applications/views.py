@@ -17,9 +17,14 @@ from .forms import AmbassadorApplicationsForm
 
 
 def welcome(request):
+    context = {
+        "max_photo_mb": MAX_PHOTO_SIZE_MB,
+        "max_bio_words": MAX_BIO_WORD_COUNT,
+    }
     return render(
         request,
         "applications/welcome.html",
+        context,
     )
 
 
