@@ -8,7 +8,8 @@ class MailJob(models.Model):
         FAILED = "failed", "Failed"
 
     campaign = models.CharField(max_length=40)
-
+    
+    # relation with application
     application = models.ForeignKey(
         "applications.AmbassadorApplications",
         on_delete=models.CASCADE,
